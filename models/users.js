@@ -1,13 +1,14 @@
 'use strict';
 const Sequelize = require('sequelize');
-const bcrypt = require('bcrypt') 
+const { Model, DataTypes } = require('sequelize');
+//const bcrypt = require('bcrypt') 
 
 module.exports = (sequelize) => {
-  class Users extends Sequelize.Model {}
+  class Users extends Model {}
   Users.init({
   //https://teamtreehouse.com/library/validators-and-custom-error-messages for validation
     firstName: {
-      type: Sequelize.STRING,
+      type: DataTypes.STRING,
       allowNull: false,
       validate: {
         notNull:{
@@ -19,7 +20,7 @@ module.exports = (sequelize) => {
       }
     },
     lastName: {
-      type: Sequelize.STRING,
+      type: DataTypes.STRING,
       allowNull: false,
       validate: {
         notNull:{
@@ -31,7 +32,7 @@ module.exports = (sequelize) => {
       }
     },
     email: {
-      type: Sequelize.STRING,
+      type: DataTypes.STRING,
       allowNull: false,
       validate:{
         notNull:{
@@ -43,7 +44,7 @@ module.exports = (sequelize) => {
       }
     },
     password: {
-      type: Sequelize.STRING,  
+      type: DataTypes.STRING,  
      allowNull: false,
       validate: {
         notNull: {
