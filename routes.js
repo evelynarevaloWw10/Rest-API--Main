@@ -2,22 +2,18 @@
 
 
 // async middleware for to use asyncHandler 
-const { asyncHandler } = require('./middleware/async-handler');
 const express = require('express');
-const Users = require('./models').Users;
+
+//async handler in middleware folder
+const { asyncHandler } = require('./middleware/async-handler');
 const course = require('./Rest-API--Main/models/course');
-const Course = require('./models').Course;
+const {Users, Course} = require('./models');
+const router = express.Router();
 
 //Express middleware, when request comes in will be sent through this function 
 //expecting request to come in as JSON 
 app.use(express.json());
-
-
-
-// Construct a router instance.
-
-const router = express.Router();
-
+//app.use('/', routes)
 
 
   //https://teamtreehouse.com/library/create-a-new-quote
@@ -29,7 +25,6 @@ router.get('/users', asyncHandler(async (req, res) => {
           firstName: users.firstName,
           lastName: users.lastName,
           email: users.email,
-          password: users.password
    });
   res.json(users);
 }));
@@ -60,17 +55,19 @@ router.get('/courses', (req,res) => {
     include: [
       {
         model: Users,
-        as: userId,
-      },
-    
-    ],     
-
-  });
+        as: 'userId',
+              attributes: ['firstName', 'lastName', 'email']
+              
+            },
+          ],through: {
+            attributes: ['title', 'description'] //don't include created at and updated at for courses    
+          }
+        });
+        // Set the status to 201 Created and end the response.
+        res.status(200).json({courses});
+    }  
+);
       
-  
-  res.status(200).end();
-});
-
 // /api/courses/:id GET
 router.get('/courses/:id', (async(req,res) => {
   const courses = await Course.findByPk(req.params.id);
