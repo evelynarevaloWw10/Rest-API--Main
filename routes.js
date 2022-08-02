@@ -7,9 +7,6 @@ const express = require('express');
 //async handler in middleware folder
 const { asyncHandler } = require('./middleware/async-handler');
 const course = require('./Rest-API--Main/models/course');
-
-
-
 const router = express.Router(); // Construct a router instance.
 const {User, Course} = require('./models');
 

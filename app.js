@@ -1,14 +1,17 @@
 'use strict';
 
+const { sequelize, models } = require('./models');
+
 // load modules
 const express = require('express');
-
-
 const morgan = require('morgan');
-const { sequelize, models } = require('./models');
-const app = express();
 
- 
+
+const app = express();
+app.use(express.json());
+
+
+
 (async () => {
   try {
     // Test the connection to the database
