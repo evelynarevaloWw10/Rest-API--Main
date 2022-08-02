@@ -7,7 +7,7 @@ const express = require('express');
 //async handler in middleware folder
 const { asyncHandler } = require('./middleware/async-handler');
 const course = require('./Rest-API--Main/models/course');
-'use strict';
+
 
 
 const router = express.Router(); // Construct a router instance.
@@ -43,8 +43,7 @@ router.post('/users', asyncHandler(async (req, res) => {
     }
   }));
 
-//app/courses/GET route that will return all courses including the User associated with each course and a 200 HTTP status code.
-//source: https://teamtreehouse.com/library/data-relationships-with-sql-and-sequelize-2/retrieve-related-data-in-sequelize-queries/retrieve-data-with-findall
+
 //source for attributes: https://sequelize.org/docs/v6/advanced-association-concepts/eager-loading/#fetching-all-associated-elements
 router.get('/courses', asyncHandler(async(req, res) =>{
     const courses = await Course.findAll({
@@ -57,7 +56,7 @@ router.get('/courses', asyncHandler(async(req, res) =>{
               
             },
           ],through: {
-            attributes: ['title', 'description'] //don't include created at and updated at for courses    
+            attributes: ['title', 'description'] 
           }
         });
         // Set the status to 201 Created and end the response.
@@ -65,7 +64,7 @@ router.get('/courses', asyncHandler(async(req, res) =>{
     }  
 ));
 
-///api/courses/:id GET route that will return the corresponding course including the User associated with that course and a 200 HTTP status code.
+
 //attributes exclude resource: https://sequelize.org/docs/v6/core-concepts/model-querying-basics/
 router.get('/courses/:id', asyncHandler(async(req,res) =>{
     const courses = await Course.findByPk(req.params.id, {

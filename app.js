@@ -7,7 +7,7 @@ const express = require('express');
 const morgan = require('morgan');
 const { sequelize, models } = require('./models');
 const app = express();
-//crashes app
+
  
 (async () => {
   try {
