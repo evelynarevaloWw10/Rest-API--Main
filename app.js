@@ -2,16 +2,13 @@
 
 // load modules
 const express = require('express');
-const { restart } = require('nodemon');
+
 
 const morgan = require('morgan');
 const { sequelize, models } = require('./models');
 const app = express();
 //crashes app
  
-// app.use('/api', routes);
-
-
 (async () => {
   try {
     // Test the connection to the database
