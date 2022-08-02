@@ -5,6 +5,11 @@ const express = require('express');
 const morgan = require('morgan');
 const { sequelize, models } = require('./models');
 
+//crashes app
+// app.use(express.json());
+// app.use('/api', routes);
+
+
 (async () => {
   try {
     // Test the connection to the database
@@ -17,6 +22,7 @@ const { sequelize, models } = require('./models');
     throw error;
   }
 })();
+
 
 // variable to enable global error logging
 const enableGlobalErrorLogging = process.env.ENABLE_GLOBAL_ERROR_LOGGING === 'true';
