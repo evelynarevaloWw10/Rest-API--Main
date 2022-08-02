@@ -2,11 +2,11 @@
 
 const Sequelize = require('sequelize');
 const { Model, DataTypes } = require('sequelize');
-const bcrypt = require('bcrypt') 
+
 
 module.exports = (sequelize) => {
-  class Users extends Model {}
-  Users.init({
+  class User extends Model {}
+  User.init({
   //https://teamtreehouse.com/library/validators-and-custom-error-messages for validation
     firstName: {
       type: DataTypes.STRING,
@@ -45,33 +45,33 @@ module.exports = (sequelize) => {
       }
     },
     password: {
-      type: DataTypes.STRING,  
-     allowNull: false,
+      type: DataTypes.STRING,
+      allowNull: false,
+      set(val) {
+        const hashedPassword = bcrypt.hashSync(val, 10);
+        this.setDataValue('password', hashedPassword);
+      },
       validate: {
-        notNull: {
-          msg: 'A password is required'
+          notNull: {
+          msg: 'A password is required',
         },
         notEmpty: {
-          msg: 'Please provide a password'
+          msg: 'Please provide a password',
         },
-        len: {
-          args: [8, 20],
-          msg: 'The password should be between 8 and 20 characters in length'
-        }
-      }
+      },
     },
     
     
   }, { sequelize });
 
-Users.associate = (models) => {
+User.associate = (models) => {
 // ADD associations 
-Users.hasMany(models.Course, {foreignKey: {
+User.hasMany(models.Course, {foreignKey: {
   fieldName: 'userId',
   allowNull: false,
 }})
 };
 
-  return Users;
+  return User;
 };
 

@@ -2,11 +2,13 @@
 
 // load modules
 const express = require('express');
+const { restart } = require('nodemon');
+
 const morgan = require('morgan');
 const { sequelize, models } = require('./models');
 const app = express();
 //crashes app
- app.use(express.json());
+ 
 // app.use('/api', routes);
 
 
@@ -17,12 +19,11 @@ const app = express();
     console.log('Connection to the database successful!');
     // Sync the models
     console.log('Synchronizing the models with the database...');
-    await sequelize.sync({ force: true });
+    await sequelize.sync();
   } catch(error) {
     throw error;
   }
 })();
-
 
 // variable to enable global error logging
 const enableGlobalErrorLogging = process.env.ENABLE_GLOBAL_ERROR_LOGGING === 'true';

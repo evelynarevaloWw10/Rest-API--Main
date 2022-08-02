@@ -1,5 +1,5 @@
 'use strict';
-const Sequelize = require('sequelize');
+
 const { Model, DataTypes } = require('sequelize');
 
 module.exports = (sequelize) => {
@@ -38,7 +38,7 @@ module.exports = (sequelize) => {
 
   Course.associate = (models) => {
     // TODO Add associations.
-    Course.belongsTo(models.Users,{foreignKey: {
+    Course.belongsTo(models.User,{foreignKey: {
     fieldName: 'userId',
     allowNull: false,
       }
