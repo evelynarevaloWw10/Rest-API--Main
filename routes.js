@@ -9,8 +9,6 @@ const { asyncHandler } = require('./middleware/async-handler');
 const course = require('./Rest-API--Main/models/course');
 'use strict';
 
-const express = require('express');
-const { restart } = require('nodemon');
 
 const router = express.Router(); // Construct a router instance.
 const {User, Course} = require('./models');
