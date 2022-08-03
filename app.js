@@ -1,9 +1,9 @@
 'use strict';
-
-const { sequelize, models } = require('./models');
+const express = require('express');
+const { sequelize } = require('./models');
 
 // load modules
-const express = require('express');
+
 const morgan = require('morgan');
 
 
