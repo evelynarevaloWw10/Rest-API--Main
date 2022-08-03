@@ -79,7 +79,7 @@ router.get('/courses', asyncHandler(async(req, res) =>{
           {
             model: User,
             as: 'user',
-            attributes: ['id', 'firstName', 'lastName', 'emailAddress'],
+            attributes: ['id', 'firstName', 'lastName', 'email'],
           }
          ]
         },
