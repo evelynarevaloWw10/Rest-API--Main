@@ -1,25 +1,37 @@
 'use strict';
 
 
-// async middleware for to use asyncHandler 
-const express = require('express');
 
-//async handler in middleware folder
-const { asyncHandler } = require('./middleware/async-handler');
-const course = require('./Rest-API--Main/models/course');
+const express = require('express');
 const router = express.Router(); // Construct a router instance.
-const {User, Course} = require('./models');
+const User = require('./models').User;
+const Course  = require('./models').Course;
+
+ // defining a protected route
+const { authenticateUser } = require('./middleware/auth-user');
+
+
+
+function asyncHandler(cb){
+  return async (req, res, next) => {
+    try {
+      await cb(req, res, next);
+    } catch (error) {
+      // Forward error to the global error handler
+      next(error);
+    }
+  }
+}
 
 
 //route returns all properties and values for the currently authenticated user
-router.get('/users', asyncHandler(async (req, res) => {
+router.get('/users', authenticateUser ,asyncHandler(async (req, res) => {
     const user = req.currentUser; // Store the user on the Request object
     res.status(200).json({ 
             firstName: user.firstName,
             lastName: user.lastName,
-            email: user.email,
+            email: user.emailAddress,
      });
-    res.json(user);
   }));
 
 
@@ -30,7 +42,6 @@ router.post('/users', asyncHandler(async (req, res) => {
       res.redirect("/");
       res.status(201).json({ "message": "Account successfully created!" });
     } catch (error) {
-      console.log('ERROR: ', error.name);
       if (error.name === 'SequelizeValidationError' || error.name === 'SequelizeUniqueConstraintError') { //validation to ensure that the following required values are properly submitted 
         const errors = error.errors.map(err => err.message);
         res.status(400).json({ errors });   
@@ -47,9 +58,7 @@ router.get('/courses', asyncHandler(async(req, res) =>{
         include: [ 
             {
               model: User,
-              as: 'userId', //courses and user associated with the course
-              //do not include created at and updated at for users
-              attributes: ['firstName', 'lastName', 'email']
+              attributes: ['id', 'firstName', 'lastName', 'email']
               
             },
           ],through: {
@@ -63,30 +72,33 @@ router.get('/courses', asyncHandler(async(req, res) =>{
 
 
 //attributes exclude resource: https://sequelize.org/docs/v6/core-concepts/model-querying-basics/
-router.get('/courses/:id', asyncHandler(async(req,res) =>{
-    const courses = await Course.findByPk(req.params.id, {
-        //do not include created at and updated at for users and courses 
-        attributes: { exclude: ['createdAt', 'updatedAt'] }, 
-        include: [ 
-            {
-              model: User,
-              as: 'userId', //courses and user associated with the course
-            },
-          ]
-    });
-    res.status(200).json({
-        title: courses.title,
-        description: courses.description,
-        estimatedTime: courses.estimatedTime,
-        materialsNeeded: courses.materialsNeeded
-    })
+    router.get('/courses/:id', asyncHandler(async(req, res) => {
+      const course = await Course.findByPk(req.params.id, {
+        attributes: {
+         include: [
+          {
+            model: User,
+            as: 'user',
+            attributes: ['id', 'firstName', 'lastName', 'emailAddress'],
+          }
+         ]
+        },
+       
+      });
+      res.status(200).json({
+        title: course.title,
+        description: course.description,
+        estimatedTime: course.estimatedTime,
+        materialsNeeded: course.materialsNeeded,
+        user: course.user,
+      });
     }));
 
 
 ///api/courses POST route that will create a new course, for the newly created course, and return a 201 HTTP status code and no content.
-router.post('/courses/:id'), asyncHandler(async(req,res) =>{
+router.post('/courses', authenticateUser, asyncHandler(async(req,res) =>{
     try{
-        const course = await records.createCourse({
+        const course = await Course.create({
             title: req.body.title,
             description: req.body.description
         });
@@ -100,10 +112,10 @@ router.post('/courses/:id'), asyncHandler(async(req,res) =>{
             throw error;
         }    
     }
-});
+}));
 
 //api/courses/:id PUT route that will update the corresponding course and return a 204 HTTP status code and no content.
-router.put('/courses/:id'), asyncHandler(async(req,res) =>{
+router.put('/courses/:id',authenticateUser, asyncHandler(async(req,res) =>{
 // add a try catch -- using a find by pk, course.update 
 const course = await Course.findByPk(req.params.id); //async call
     try {
@@ -125,10 +137,11 @@ const course = await Course.findByPk(req.params.id); //async call
         } else{
             throw error;
         }
-}})
+}}
+))
 
 //api/courses/:id DELETE route that will delete the corresponding course and return a 204 HTTP status code and no content.
-router.delete('/courses/:id'), asyncHandler(async(req,res) =>{ // use from project 
+router.delete('/courses/:id',authenticateUser, asyncHandler(async(req,res) =>{ // use from project 
     const course = await Course.findByPk(req.params.id);
     if (course) {
       if (req.currentUser.id === course.userId){
@@ -140,6 +153,7 @@ router.delete('/courses/:id'), asyncHandler(async(req,res) =>{ // use from proje
       }
     } else {
       res.sendStatus(404);
-    }})
+    }}
+    ))
 
  module.exports = router;

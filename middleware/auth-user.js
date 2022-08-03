@@ -1,5 +1,7 @@
 'use strict';
 
+
+//https://teamtreehouse.com/library/parse-the-authorization-header
 const auth = require('basic-auth');
 const bcrypt = require('bcrypt')
 const { User } = require('../models');
@@ -16,7 +18,7 @@ exports.authenticateUser = async (req, res, next) => {
 
         if (user) {
             const authenticated = bcrypt
-              .compareSync(credentials.pass, user.confirmedPassword);
+              .compareSync(credentials.pass, user.password);
               if (authenticated) { // If the passwords match
                 console.log(`Authentication successful for email: ${user.email}`);
 
