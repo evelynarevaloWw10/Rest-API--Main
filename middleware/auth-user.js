@@ -14,7 +14,7 @@ exports.authenticateUser = async (req, res, next) => {
     const credentials = auth(req);
 
     if (credentials) {
-        const user = await User.findOne({ where: {email: credentials.emailAddress} });
+        const user = await User.findOne({ where: {emailAddress: credentials.emailAddress} });
 
         if (user) {
             const authenticated = bcrypt

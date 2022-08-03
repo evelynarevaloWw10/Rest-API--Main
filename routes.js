@@ -30,7 +30,7 @@ router.get('/users', authenticateUser ,asyncHandler(async (req, res) => {
     res.status(200).json({ 
             firstName: user.firstName,
             lastName: user.lastName,
-            email: user.emailAddress,
+            emailAddress: user.emailAddress,
      });
   }));
 
@@ -54,20 +54,22 @@ router.post('/users', asyncHandler(async (req, res) => {
 
 //source for attributes: https://sequelize.org/docs/v6/advanced-association-concepts/eager-loading/#fetching-all-associated-elements
 router.get('/courses', asyncHandler(async(req, res) =>{
-    const courses = await Course.findAll({
-        include: [ 
-            {
-              model: User,
-              attributes: ['id', 'firstName', 'lastName', 'email']
-              
-            },
-          ],through: {
-            attributes: ['title', 'description'] 
-          }
-        });
-        // Set the status to 201 Created and end the response.
-        res.status(200).json({courses});
-    }  
+  const courses = await Course.findAll({
+      include: [ 
+          {
+            model: User,
+          //courses and user associated with the course
+            //do not include created at and updated at for users
+            attributes: ['firstName', 'lastName', 'emailAddress']
+            
+          },
+        ],through: {
+          attributes: ['title', 'description'] //don't include created at and updated at for courses    
+        }
+      });
+      // Set the status to 201 Created and end the response.
+      res.status(200).json({courses});
+  }  
 ));
 
 
@@ -78,8 +80,7 @@ router.get('/courses', asyncHandler(async(req, res) =>{
          include: [
           {
             model: User,
-            as: 'user',
-            attributes: ['id', 'firstName', 'lastName', 'email'],
+            attributes: ['id', 'firstName', 'lastName', 'emailAddress'],
           }
          ]
         },
