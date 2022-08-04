@@ -138,9 +138,9 @@ router.delete('/courses/:id',authenticateUser, asyncHandler(async(req,res) =>{ /
     if (course) {
       if (req.currentUser.id === course.userId){
         await course.destroy();
-        res.status(204).json({message: "Course has been deleted"}).end();
+        res.status(204).end();
       } else {
-        res.status(400).json({message: "Course can't be deleted"})
+        res.status(400).end();
       }
     } else {
       res.sendStatus(404);
