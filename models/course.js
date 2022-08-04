@@ -1,5 +1,6 @@
 'use strict';
 
+// Course model with title,description, estimated time and time needed
 const { Model, DataTypes } = require('sequelize');
 
 module.exports = (sequelize) => {

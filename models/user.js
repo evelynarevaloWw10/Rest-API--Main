@@ -1,5 +1,5 @@
 'use strict';
-
+// User Model with f/l name, emailAddress and password
 const Sequelize = require('sequelize');
 const { Model, DataTypes } = require('sequelize');
 const bcrypt = require('bcrypt');

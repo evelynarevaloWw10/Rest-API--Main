@@ -1,5 +1,6 @@
 'use strict';
 
+//middleware to authenticate name, email and password
 
 //https://teamtreehouse.com/library/parse-the-authorization-header
 const auth = require('basic-auth');
