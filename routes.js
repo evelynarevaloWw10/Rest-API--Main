@@ -32,15 +32,17 @@ router.get('/users', authenticateUser ,asyncHandler(async (req, res) => {
             lastName: user.lastName,
             emailAddress: user.emailAddress,
      });
-     res.json(user);
   }));
 
 
   // Route that creates a new user.
 router.post('/users', asyncHandler(async (req, res) => {
     try {
-      await User.create(req.body);
-      res.redirect("/");
+
+     await User.create(req.body);
+     // res.redirect("/"); //= maybe might need will leave not pass 
+      res.location("/"); // == not sure if correct
+   
       res.status(201).json({ "message": "Account successfully created!" });
     } catch (error) {
       if (error.name === 'SequelizeValidationError' || error.name === 'SequelizeUniqueConstraintError') { //validation to ensure that the following required values are properly submitted 
@@ -73,16 +75,16 @@ router.get('/courses', asyncHandler(async(req, res) =>{
 //attributes exclude resource: https://sequelize.org/docs/v6/core-concepts/model-querying-basics/
 router.get('/courses/:id', asyncHandler(async(req,res) =>{
   const course = await Course.findByPk(req.params.id, {
-      //do not include created at and updated at for users and courses 
-      attributes: { exclude: ['createdAt', 'updatedAt'] }, 
+   
+      attributes: { exclude: ['createdAt', 'updatedAt', 'password'] }, 
       include: [ 
           {
             model: User,
-           //courses and user associated with the course
+          
           },
         ]
   });
-  res.status(200).json(course)
+  res.status(200).json({course})
   }));
 
 
@@ -93,13 +95,13 @@ router.post('/courses', authenticateUser, asyncHandler(async(req,res) =>{
       const course = await Course.create(req.body);
 
        res.location(`/courses/${course.id}`);
-        res.status(201).json(course).end();  
+        res.status(201).end();
        
     } catch (error) {
         if (error.name === 'SequelizeValidationError' || error.name === 'SequelizeUniqueConstraintError') {
             const errors = error.errors.map(err => err.message);
           
-            res.status(400).json({ errors });   
+            res.status(400).json({message: "title and description required."});
             // res.status(400).json({message: "title and description required."});
         } else{
             throw error;
@@ -114,12 +116,8 @@ let course ;
     try {
         course = await Course.findByPk(req.params.id); //async call
         if (course) {
-            if(req.currentUser.id === course.userId) {
                 await course.update(req.body);
                 res.status(204).json({message: "Course has been updated!"}).end();
-            } else {
-                res.sendStatus(404);
-            }
         } else {
         res.sendStatus(404);
         }
@@ -127,7 +125,7 @@ let course ;
         if ( error.name === "SequelizeValidationError" || error.name === 'SequelizeUniqueConstraintError') {
             const errors = error.errors.map(err => err.message);
             res.status(400).json({ errors });   
-        } else{
+        } else {
            throw error;
         }
 }}));
